@@ -1,0 +1,245 @@
+<html>
+
+<head>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.0.min.js">
+
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" type="text/css" href="styles/default.css">
+</head>
+
+<body>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+    crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+    crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+    crossorigin="anonymous"></script>
+
+    <ol class="breadcrumb">
+        <li><a href="http://localhost/FFTwebdev/index.html">Home</a></li>
+        <li><a href="http://localhost/FFTwebdev/functions.html">Functions</a></li>
+        <li class="active"><a href="http://localhost/FFTwebdev/graphs.html">Graphs</a></li>
+    </ol>
+
+    <div name="template" class="col-lg-6">
+        <span class="btn btn-default btn-file col-lg-2">
+            Browse<input type="file" id="file" />
+        </span>
+
+        <button type="button" class="btn btn-primary col-lg-4 generateButton" id="leftGenerateButton">Get Spectrum</button>
+
+        <div class="dropdown col-lg-2">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="true">
+                Select plot type
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="#" class="plotType">steps</a></li>
+                <li><a href="#" class="plotType">impulses</a></li>
+                <li><a href="#" class="plotType">dots</a></li>
+                <li><a href="#" class="plotType">linespoints</a></li>
+                <li><a href="#" class="plotType">lines</a></li>
+                <li><a href="#" class="plotType">points</a></li>
+            </ul>
+        </div>
+
+
+        <img id="leftSpectrum" class="col-lg-12" src="graphs/default/DustyF1-break8.png"></img>
+    </div>
+
+    <div name="template2" class="col-lg-6">
+        <span class="btn btn-default btn-file col-lg-2">
+            Browse<input type="file" id="file2" />
+        </span>
+        <button type="button" class="btn btn-primary col-lg-4 generateButton" id="rightGenerateButton">Get Spectrum</button>
+
+        <div class="dropdown col-lg-2">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="true">
+                Select plot type
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                <li><a href="#" class="plotType2">steps</a></li>
+                <li><a href="#" class="plotType2">impulses</a></li>
+                <li><a href="#" class="plotType2">dots</a></li>
+                <li><a href="#" class="plotType2">linespoints</a></li>
+                <li><a href="#" class="plotType2">lines</a></li>
+                <li><a href="#" class="plotType2">points</a></li>
+            </ul>
+        </div>
+
+        <img id="rightSpectrum" class="col-lg-12" src="graphs/default/DustyF1-break11.png"></img>
+    </div>
+
+<div name="description" class="col-lg-12">
+        <button type="button" class="btn btn-default col-lg-1" id="helpButton">Help</button>
+        <div class="col-lg-10 description" >
+        Use the browse button to select the txt file you wish to plot on the website. <br>
+        After you've selected a file use the dropdown to select a plotting type(e.g. lines, point, dots, impulses).<br>
+        Use the "Get Spectrum" button to generate your graph.<br>
+        NOTE: Depending on the selected file size it might take a while until the plotting of the file is done. Do not click the "Get Spectrum" button until the graph is displayed on the website.
+        </div>
+    </div>
+
+
+</body>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+   // $(".generateButton").hide();
+    $('.description').hide();
+    var leftFile;
+    var rightFile;
+    
+    
+    $('#helpButton').click(function(){
+        $('.description').toggle();
+    });
+    
+    $(".plotType").click(function(){
+       $('#dropdownMenu1').text($(this).text());
+    });
+    
+    $(".plotType2").click(function(){
+       $('#dropdownMenu2').text($(this).text());
+    });
+    
+    $("#file").change(function () {
+    if ($("#file").val() == "") {
+        return;
+    }else{
+        $("#leftGenerateButton").show();
+        leftFile = $('#file').val();
+    }
+});
+
+    $("#file2").change(function () {
+    if ($("#file2").val() == "") {
+        return;
+    }else{
+        $("#rightGenerateButton").show();
+        rightFile = $('#file2').val();
+    }
+});
+    
+    $("#rightGenerateButton").click(function(){
+        var plotType = $('#dropdownMenu2').text(); 
+        var filePath = rightFile;
+                var data = {
+                    name: getFileName(filePath), 
+                    plotType: plotType,
+                };
+                
+            $.ajax({ 
+                type: 'POST',
+                url: "getSpectrum.php",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(output) {
+                        console.log(output);
+                },
+                error: function(output){
+                    console.log("something went wrong...");
+                }
+            });
+    });
+    
+    $("#leftGenerateButton").click(function(){
+        $.ajax({
+        data:{
+            name:getFileName(leftFile),
+            plotType:$('#dropdownMenu1').text(),
+        },
+        url: 'getData.php',
+        type: 'GET',
+        dataType:"json",
+        success: function(data){ 
+            if(data['imagePath'] != null){ //if file id is set generate and insert image in db. esle insert both file and image.
+                document.getElementById("leftSpectrum").src="../FFTwebdev/"+data['imagePath']+".PNG";
+            }else{
+                $.ajax({
+                   type: 'post',
+                   url: 'getSpectrum.php',
+                   data:JSON.stringify({
+                        name:getFileName(leftFile),
+                        plotType:$('#dropdownMenu1').text(),
+                        }),
+                   dataType: "json",
+                   contentType: "application/json",
+                   success: function(result){
+                       console.log(result);
+                       document.getElementById("leftSpectrum").src="../FFTwebdev/"+result['image_name']+".png";
+                   },
+                   error: function(result){
+                       console.log(result);
+                   }  
+                });
+            }
+    },
+    error: function(data) {
+        alert('woops!'); //or whatever
+    }
+});
+    });
+    
+    
+});
+
+function getFileName(file){
+    var fullPath = file; 
+    if (fullPath) {
+	           var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+	           var filename = fullPath.substring(startIndex);
+	           if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                   filename = filename.substring(1);
+	           }
+               return filename;
+}
+}
+
+function requestPost(urlp, datap){
+    //insert in db
+    
+    $.ajax({ 
+                type: 'POST',
+                url: urlp,
+                data: JSON.stringify(datap),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(output) {
+                    if(output['status'] == 0){
+                        document.getElementById("RightSpectrum").src="../FFTwebdev/"+output['pngFile']+".png";
+                    }
+                },
+                error: function(output){
+                    console.log("something went wrong...");
+                }
+            });
+}
+
+function requestGet(urlp, datap){
+    //check db for filepath and graph
+
+}
+
+function requestPut(urlp, datap){
+    //change db
+}
+
+function requestDelete(urlp, datap){
+    //remove form db and window
+}
+
+</script>
+
+</html>

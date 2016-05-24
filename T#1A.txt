@@ -1,0 +1,9 @@
+Pentru generarea ploturilor este necesar cel putin un fisier
+txt cu data de intrare asezate pe 2 coloane separate printr-un
+spatiu.
+
+Datale sunt prelucrate folosind GNUPlots cu ajutorul unui php.
+Dupa generarea graficului acesta este exportat in format PNG,
+raspunsul fiind returnat sub format json cu continutul {"image_name": ",,,",
+"image_id:": ".."
+}
